@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- /*
+<!--
  * This file is part of the Companion project
  * Copyright (c) 2018 Bitfocus AS
  * Authors: William Viker <william@bitfocus.io>, Håkon Nessjøen <haakon@bitfocus.io>
@@ -14,7 +14,7 @@
  * develop commercial activities involving the Companion software without
  * disclosing the source code of your own applications.
  *
- */ -->
+-->
 <html lang="en">
 	<head>
 
@@ -36,8 +36,10 @@
 		<link href="css/style.css" rel="stylesheet">
 		<link href="vendors/pace-progress/css/pace.min.css" rel="stylesheet">
 		<link href="/fa/css/all.css" rel="stylesheet">
+		<link href="/tributejs/tribute.css" rel="stylesheet" />
 		<link href="index.css" rel="stylesheet">
 		<link href='css/spectrum.css' rel='stylesheet'>
+		<link href="select2/css/select2.min.css" rel="stylesheet" />
 
 	</head>
 
@@ -68,6 +70,9 @@
 			</button>
 
 			<a class="navbar-brand" href="#">
+				<span class="navbar-brand-minimized">
+					<img src="img/brand/icon.png" height="42px"/>
+				</span>
 				<span class="navbar-brand-full">
 					<span style="font-weight:bold">Bitfocus</span> Companion
 				</span>
@@ -80,7 +85,7 @@
 				</li> -->
 
 				<li class="nav-item px-3">
-					<a class="nav-link" target="_new" id='versiontext' href="https://bitfocus.io/companion/">?</a>
+					<a class="nav-link" target="_new" id='versiontext' title="Version Number" href="https://bitfocus.io/companion/">?</a>
 				</li>
 
 				<li class="nav-item px-3">
@@ -111,12 +116,14 @@
 				</li>
 			-->
 			</ul>
+			<!--
 			<button class="navbar-toggler aside-menu-toggler d-md-down-none" type="button" data-toggle="aside-menu-lg-show">
 				<span class="fa fa-bars"></span>
 			</button>
 			<button class="navbar-toggler aside-menu-toggler d-lg-none" type="button" data-toggle="aside-menu-show">
 				<span class="fa fa-bars"></span>
 			</button>
+			-->
 		</header>
 
 		<div class="app-body">
@@ -132,7 +139,7 @@
 
 						<li class="nav-item">
 							<a class="nav-link" target="_new" href="/tablet.html">
-								<i class="nav-icon fa fa-gamepad"></i> Web buttons
+								<i class="nav-icon fa fa-mouse-pointer"></i> Web buttons
 							</a>
 						</li>
 
@@ -143,22 +150,29 @@
 						</li>
 
 						<li class="nav-item">
-							<a class="nav-link" target="_new" href="https://www.facebook.com/groups/2047850215433318/">
+							<a class="nav-link" target="_new" href="https://www.facebook.com/groups/companion/">
 								<i class="nav-icon fa fa-users"></i> Facebook
 							</a>
 						</li>
 
 						<li class="nav-item">
-							<a class="nav-link" target="_new" href="https://bit.ly/2IJ1jT4">
+							<a class="nav-link" target="_new"
+href="https://join.slack.com/t/bitfocusio/shared_invite/enQtODk4NTYzNTkzMjU1LTMzZDY1Njc2MmE3MzVlNmJhMTBkMzFjNTQ2NzZlYzQyZWIzZTJkZWIyNmJlY2U0NzM1NGEzNzNlZWY3OWJlNGE">
 								<i class="nav-icon fa fa-comments"></i> Slack Chat
 								<!-- <span class="badge badge-primary">NEW</span> -->
 							</a>
 						</li>
 
 						<li class="nav-item">
-							<a class="nav-link" target="_new" href="https://opencollective.com/companion">
+							<a class="nav-link" target="_new" href="https://donorbox.org/bitfocus-opensource">
 								<i class="nav-icon fa fa-dollar"></i> Donate
 							<!--	<span class="badge badge-primary"></span> -->
+							</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link" target="_new" href="/help.html">
+								<i class="nav-icon fa fa-info"></i> Getting Started
 							</a>
 						</li>
 
@@ -209,17 +223,6 @@
 
 								<div class="tab-content padbottom">
 									<div class="tab-pane active" id="instances" role="tabpanel">
-										<div class="alert alert-danger">
-											<strong>WELCOME TO 2.0-ALPHA. DO <em>NOT</em> USE THIS IN PRODUCTION!</strong><br>
-											We've been working a long time on this and there has been very little testing until now. Please let us know on slack or github if you find bugs :)
-												<br><br><b>Known issues</b>
-												<ul style='padding-top:0px;margin-top:0px;;margin-bottom:0;padding-bottom:0;'>
-													<li>[<a href="https://github.com/bitfocus/companion/issues/687" target="_new">#687</a>] Stream Deck XL renders/scales poorly</li>
-													<li>[<a href="https://github.com/bitfocus/companion/issues/688" target="_new">#688</a>] Stream Deck plugin and its support needs to be updated</li>
-													<li>See also <a href="https://github.com/bitfocus/companion/labels/BUG" target="_new">ALL BUGS</a></li>
-												</ul>
-
-										</div>
 										<h4>Connections / Instances</h4>
 										<p>Instances are the connections companion makes to other devices and software in order to control them.</p>
 
@@ -260,6 +263,7 @@
 											<div id='instance_add_search_results'>
 											</div>
 										</div>
+
 									</div>
 
 									<div class="tab-pane" id="actions" role="tabpanel">
@@ -291,6 +295,7 @@
 									<div class="tab-pane" id="instanceConfig" role="tabpanel">
 										<h4></h4>
 										<div id='instanceConfigFields' class="row"></div>
+										<div id='instanceConfigButtons'></div>
 										<hr>
 										<div id='instanceConfigVariables' class="row col-lg-12">
 											<h4>List of dynamic variables</h4>
@@ -331,7 +336,7 @@
 
 									<div class="tab-pane" id="elgatobuttons" role="tabpanel">
 										<h4>Button layout</h4>
-										<p>The squares below represents each button on your streamdeck. Click on them to set up how you want them to look, and what they should do when you press or click on them. You can navigate between pages using the arrow buttons.</p>
+										<p>The squares below represent each button on your Streamdeck. Click on them to set up how you want them to look, and what they should do when you press or click on them.</p><p>You can navigate between pages using the arrow buttons, or by clicking the page number, typing in a number, and pressing 'Enter' on your keyboard.</p>
 
 										<div class="row" id='pagenav'>
 										</div>
@@ -361,14 +366,8 @@
 										<p>Settings applies instantaneously, don't worry about it!</p>
 
 										<table class='table'>
-											<thead>
-												<tr>
-													<th>Setting</th>
-													<th>Value</th>
-												</tr>
-											</thead>
 											<tbody>
-
+												<td colspan="2" class="settings-category">Navigation Buttons</td>
 
 												<!-- flip page up/down -->
 												<tr>
@@ -390,6 +389,17 @@
 														</div>
 													</td>
 												</tr>
+													<td colspan="2" class="settings-category">Devices</td>
+												<tr>
+													<td>Enable emulator control for Logitec R400/Mastercue/dSan</td>
+													<td>
+														<div class="form-check form-check-inline mr-1">
+															<input class="form-check-input" type="checkbox" id="userconfig_emulator_control_enable" value="1">
+															<label class="form-check-label" for="userconfig_emulator_control_enable">Enabled</label>
+														</div>
+													</td>
+												</tr>
+													<td colspan="2" class="settings-category">PIN Lockout</td>
 
 												<tr>
 													<td>Enable Pin Codes</td>
@@ -428,7 +438,7 @@
 														</div>
 													</td>
 												</tr>
-
+													<td colspan="2" class="settings-category">Artnet Listener</td>
 												<tr>
 													<td>Artnet Listener</td>
 													<td>
@@ -490,9 +500,42 @@
 										<p>Press page 1 bank 2<br>
 											<code>BANK-PRESS 1 2</code></p>
 
+										<h4>OSC Remote control</h4>
+										<p>Remote triggering can be done by sending OSC commands to port <code>12321</code>.</p>
+										<p><strong>Commands:</strong>
+											<ul>
+
+												<li><code>/press/bank/</code>&lt;page&gt; &lt;bank&gt;<br>
+												<i>Press and release a button (run both down and up actions)</i></li>
+												<li><code>/press/bank/</code> &lt;page&gt; &lt;bank&gt; &lt;1&gt;<br>
+												<i>Press the button (run down actions and hold)</i></li>
+												<li><code>/press/bank/</code> &lt;page&gt; &lt;bank&gt; &lt;0&gt;<br>
+												<i>Release the button (run up actions)</i></li>
+												<li><code>/style/bgcolor/</code> &lt;page&gt; &lt;bank&gt; &lt;red 0-255&gt; &lt;green 0-255&gt; &lt;blue 0-255&gt;<br>
+												<i>Change background color of button</i></li>
+												<li><code>/style/color/</code> &lt;page&gt; &lt;bank&gt; &lt;red 0-255&gt; &lt;green 0-255&gt; &lt;blue 0-255&gt;<br>
+												<i>Change color of text on button</i></li>
+												<li><code>/style/text/</code> &lt;page&gt; &lt;bank&gt;  &lt;text&gt;<br>
+												<i>Change text on a button</i></li>
+											</ul>
+										</p>
+
+										<p>
+											<strong>Examples</strong>
+										</p>
+
+										<p>Press button 5 on page 1 down and hold<br>
+											<code>/press/bank/1/5 1</code></p>
+
+										<p>Change button background color of button 5 on page 1 to red<br>
+											<code>/style/bgcolor/1/5 255 0 0</code></p>
+
+										<p>Change the text of button 5 on page 1 to ONLINE<br>
+											<code>/style/text/1/5 ONLINE</code></p>
+
 										<br>
-										<a class="btn btn-success" href="/bitfocus@companion_v1.2@00.xml">
-											<i class="fa fa-file-import"></i> Download GrandMA2 Fixture file
+										<a class="btn btn-success" href="/bitfocus@companion_v2.0@00.xml">
+											<i class="fa fa-file-import"></i> Download GrandMA2 Fixture file (v2.0)
 										</a>
 
 									</div>
@@ -629,11 +672,11 @@
 													<div id="import_btn_pagedown" class="btn btn-primary">
 														<i class="fa fa-chevron-left"></i>
 													</div>
-													<span class='page_curr'>X</span>
+													<input id="import_page_curr" class="page_curr" placeholder="" type="text" value="PAGE">
 													<div id="import_btn_pageup" class="btn btn-primary">
 														<i class="fa fa-chevron-right"></i>
 													</div>
-													<input id="import_page_title" placeholder="Page name" type="text" value="PAGE">
+													<input id="import_page_title" class="page_title" placeholder="Page name" type="text" value="PAGE">
 												</div>
 
 											</div>
@@ -697,6 +740,14 @@
 											<span class="fa fa-trash-alt"></span> Reset configuration
 										</button>
 										<br>
+										<div class="alert alert-warning mt-3">
+											<strong>Something to know</strong><br>
+											There's been reports of weird stuff going on with import, export and reset.
+											So, at this point after using any of the features, it's recommended to restart
+											companion manually by exiting and reopening the applications. That's been known
+											to fix most of the problems.
+
+										</div>
 
 
 									</div>
@@ -768,6 +819,8 @@
 		<script src="js/rowsorter/dist/RowSorter.js"></script>
 		<script src='js/spectrum.js'></script>
 		<script src="js/preview.js"></script>
+		<script src="select2/js/select2.min.js"></script>
+		<script src="tributejs/tribute.min.js"></script>
 		<script src="page.js"></script>
 		<script src="bank.js"></script>
 		<script src="userconfig.js"></script>

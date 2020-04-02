@@ -16,12 +16,7 @@
 # disclosing the source code of your own applications.
 #
 
-git fetch --unshallow
-
-# gets the current git branch
-function parse_git_branch() {
-	echo -n ${APPVEYOR_REPO_BRANCH}${TRAVIS_BRANCH}
-}
+git fetch --depth=10000
 
 # get last commit hash prepended with @ (i.e. @8a323d0)
 function parse_git_hash() {
@@ -36,33 +31,40 @@ function release() {
 	cat package.json |grep \"version\"|cut -f4 -d\"
 }
 
-GIT_BRANCH=$(release)-$(parse_git_hash)-$(parse_git_count)
+function build() {
+	cat BUILD
+}
 
-if [[ "$(parse_git_branch)" != "master" ]]; then
-	GIT_BRANCH=$(release)-$(parse_git_branch)-$(parse_git_hash)
-fi
+GIT_BRANCH=$(build)
 
 echo "RELEASE $(release)"
-echo "PARSE_GIT_BRANCH $(parse_git_branch)"
 echo "PARSE_GIT_HASH $(parse_git_hash)"
-echo "TRAVIS_BRANCH $TRAVIS_BRANCH"
-
 ls -la electron-output
-echo "TO BRANCH ${GIT_BRANCH}"
+echo "TO BRANCH '${GIT_BRANCH}'"
 
 if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
 	echo OSX
-	mv -vf electron-output/Companion*.zip electron-output/companion-${GIT_BRANCH}-osx.zip
+	mv -vf ./electron-output/*.zip ./electron-output/companion-${GIT_BRANCH}-osx.zip
+	ARTIFACT_SOURCE="./electron-output/companion-${GIT_BRANCH}-osx.zip"
+	ARTIFACT_DESTINATION="companion-${GIT_BRANCH}-osx.zip"
 elif [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
 	echo LINUX
-	mkdir electron-linux-output
-	cp electron-output/*.tar.gz electron-linux-output/companion-${GIT_BRANCH}-linux.tar.gz
+	mv -fv ./electron-output/*.gz ./electron-output/companion-${GIT_BRANCH}-linux.tar.gz
+	ARTIFACT_SOURCE="./electron-output/companion-${GIT_BRANCH}-linux.tar.gz"
+	ARTIFACT_DESTINATION="companion-${GIT_BRANCH}-linux.tar.gz"
 elif [[ "$TRAVIS_OS_NAME" == "win64" ]]; then
 	echo WINDOWS
-	mv -f electron-output/*.exe electron-output/companion-${GIT_BRANCH}-win64.exe
+	mv -fv ./electron-output/*.exe ./electron-output/companion-${GIT_BRANCH}-win64.exe
+	ARTIFACT_SOURCE="./electron-output/companion-${GIT_BRANCH}-win64.exe"
+	ARTIFACT_DESTINATION="companion-${GIT_BRANCH}-win64.exe"
 elif [[ "$TRAVIS_OS_NAME" == "armv7l" ]]; then
 	echo ARM
-	mv -f electron-output/*.tar.gz electron-output/companion-${GIT_BRANCH}-armv7l.tar.gz
+	mv -fv ./electron-output/*.gz ./electron-output/companion-${GIT_BRANCH}-armv7l.tar.gz
+	ARTIFACT_SOURCE="./electron-output/companion-${GIT_BRANCH}-armv7l.tar.gz"
+	ARTIFACT_DESTINATION="companion-${GIT_BRANCH}-armv7l.tar.gz"
 fi
+
+echo UPLOADING 
+node ./tools/upload_build.js ${ARTIFACT_SOURCE} ${ARTIFACT_DESTINATION}
 
 echo DONE

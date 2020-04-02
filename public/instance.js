@@ -239,6 +239,7 @@ $(function() {
 
 						$x.prepend($button);
 						$x.data('id', x);
+						$x.data('product', prods[prod]);
 
 						var $help = $('<div class="instance_help"><i class="fa fa-question-circle"></i></div>')
 
@@ -261,7 +262,8 @@ $(function() {
 						$button.click(function(e) {
 							e.preventDefault();
 							var instance_type = $(this).parents('div').first().data('id');
-							socket.emit('instance_add', instance_type );
+							var product = $(this).parents('div').first().data('product');
+							socket.emit('instance_add', { type: instance_type, product: product });
 							$aisr.html("");
 							$aisf.val("");
 
@@ -291,7 +293,8 @@ $(function() {
 	// add instance code
 	$(".add-instance-ul").on('click', '.instance-addable', function() {
 		var instance_type = $(this).data('id');
-		socket.emit('instance_add', instance_type );
+		var product = $(this).data('product');
+		socket.emit('instance_add', { type: instance_type, product: product });
 
 		socket.once('instance_add:result', function(id,db) {
 			instance.db = db;
@@ -312,22 +315,31 @@ $(function() {
 		$addInstance = $("#addInstance");
 		$addInstanceByManufacturer = $("#addInstanceByManufacturer");
 
-		if (instance_category !== undefined) {
+		function compareCaseInsensitive(a, b){
+			var a2 = a.toLowerCase();
+			var b2 = b.toLowerCase();
+			if (a2 < b2) {return -1;}
+			if (a2 > b2) {return 1;}
+			return 0;
+		}
 
-			for (var n in instance_category) {
+		function compileChildNodes(obj, $instanceListElm) {
+			const category_names = Object.keys(obj).sort(compareCaseInsensitive)
+			for (var n of category_names) {
 
 				var $entry_li = $('<li class="dropdown-submenu"></li>');
 				var $entry_title = $('<div tabindex="-1" class="dropdown-content"></div>');
 
 				$entry_title.text(n);
 				$entry_li.append($entry_title);
-				$addInstance.append($entry_li);
+				$instanceListElm.append($entry_li);
 
 				var $entry_sub_ul = $('<ul class="dropdown-menu"></ul>');
 
-				for ( var sub in instance_category[n] ) {
+				var child_elms = []
+				for ( var sub in obj[n] ) {
 
-					var inx = instance_category[n][sub];
+					var inx = obj[n][sub];
 					var res_id = inx;
 					var res_name = instance_name[inx];
 					var main_split = res_name.split(":");
@@ -336,47 +348,30 @@ $(function() {
 
 					for (var prod in prods) {
 						var subprod = manuf + " " + prods[prod];
-						var $entry_sub_li = $('<li><div class="dropdown-content instance-addable" data-id="'+res_id+'">'+subprod+'</div></li>');
-						$entry_sub_ul.append($entry_sub_li);
+						var $entry_sub_li = $('<li><div class="dropdown-content instance-addable" data-id="'+res_id+'" data-product="'+prods[prod]+'">'+subprod+'</div></li>');
+						child_elms.push({
+							name: manuf + " " + prods[prod],
+							elm: $entry_sub_li
+						})
 					}
+				}
 
+				child_elms.sort((a, b) => compareCaseInsensitive(a.name, b.name))
+				for ( var elm of child_elms ) {
+					$entry_sub_ul.append(elm.elm);
 				}
 
 				$entry_li.append($entry_sub_ul);
 
 			}
+		}
 
-			for (var n in instance_manufacturer) {
+		if (instance_category !== undefined) {
+			compileChildNodes(instance_category, $addInstance)
+		}
 
-				var $entry_li = $('<li class="dropdown-submenu"></li>');
-				var $entry_title = $('<div tabindex="-1" class="dropdown-content"></div>');
-
-				$entry_title.text(n);
-				$entry_li.append($entry_title);
-				$addInstanceByManufacturer.append($entry_li);
-
-				var $entry_sub_ul = $('<ul class="dropdown-menu"></ul>');
-
-				for ( var sub in instance_manufacturer[n] ) {
-
-					var inx = instance_manufacturer[n][sub];
-					var res_name = instance_name[inx];
-					var main_split = res_name.split(":");
-					var manuf = main_split[0];
-					var prods = main_split[1].split(";");
-
-					for (var prod in prods) {
-						var subprod = manuf + " " + prods[prod];
-						var $entry_sub_li = $('<li><div class="dropdown-content instance-addable" data-id="'+inx+'">'+subprod+'</div></li>');
-						$entry_sub_ul.append($entry_sub_li);
-					}
-
-				}
-
-				$entry_li.append($entry_sub_ul);
-
-			}
-
+		if (instance_manufacturer !== undefined) {
+			compileChildNodes(instance_manufacturer, $addInstanceByManufacturer)
 		}
 
 	});
@@ -411,6 +406,10 @@ $(function() {
 			}
 
 			else if ($this.data('type') == 'dropdown') {
+				data[$this.data('id')] = $this.val();
+			}
+
+			else if ($this.data('type') == 'dropdown-native') {
 				data[$this.data('id')] = $this.val();
 			}
 
@@ -529,7 +528,20 @@ $(function() {
 
 		for (var n in store.module) {
 			if (store.module[n].name === store.db[id].instance_type) {
-				$('#instanceConfig h4:first').text( store.module[n].shortname + ' configuration');
+
+				var help = '';
+				if (store.module[n].help) {
+					help = '<div class="instance_help"><i class="fa fa-question-circle"></i></div>';
+				}
+
+				$('#instanceConfig h4:first').html(help + store.module[n].shortname + ' configuration');
+
+				(function (name) {
+					$('#instanceConfig').find('.instance_help').click(function () {
+						show_module_help(name);
+					});
+				})(store.module[n].name);
+
 			}
 		}
 
@@ -594,7 +606,80 @@ $(function() {
 				$sm.append($inp);
 			}
 
-			else if (field.type == 'dropdown') {
+			else if (field.type === 'dropdown') {
+
+				var $opt_input = $("<select class='instanceConfigField' data-type='"+field.type+"' data-id='"+field.id+"'></select>");
+				$opt_input.data('valid', true);
+				if (field.tooltip !== undefined) {
+					$opt_input.attr('title', field.tooltip);
+				}
+
+				$sm.append($opt_input);
+
+				var selectoptions = {
+					theme: 'option',
+					width: '100%',
+					multiple: false,
+					tags: false,
+					maximumSelectionLength: 0,
+					minimumResultsForSearch: -1
+				};
+
+				if (field.multiple === true) {
+					selectoptions.multiple = true;
+				}
+
+				if (typeof field.minChoicesForSearch === 'number' && field.minChoicesForSearch >=0) {
+					selectoptions.minimumResultsForSearch = field.minChoicesForSearch;
+				}
+
+				if (typeof field.maxSelection === 'number' && field.maxSelection >0) {
+					selectoptions.maximumSelectionLength = field.maxSelection;
+				}
+
+				if (field.tags === true) {
+					selectoptions.tags = true;
+					if (typeof field.regex !== 'undefined') {
+						var flags = field.regex.replace(/.*\/([gimy]*)$/, '$1');
+						var pattern = field.regex.replace(new RegExp('^/(.*?)/'+flags+'$'), '$1');
+						let regex = new RegExp(pattern, flags);
+						selectoptions.createTag = function (params) {
+							if (regex.test(params.term) === false) {
+								return null;
+							}
+
+							return {
+								id: params.term,
+								text: params.term
+							}
+						};
+					}
+
+				}
+
+				$opt_input.select2(selectoptions);
+
+				if (field.multiple === true && typeof field.minSelection === 'number' && field.minSelection >0) {
+					let minsel = field.minSelection + 1;
+					$opt_input.on('select2:unselecting', function (e) {
+						if ($('.select2-selection__choice').length < minsel) {
+							return false;
+						}
+					});
+				}
+
+				for (var x in field.choices) {
+					var newOption = new Option(field.choices[x].label, field.choices[x].id, false, false);
+					$opt_input.append(newOption);
+				}
+
+				// update the select2 element
+				$opt_input.val(field.default);
+				$opt_input.trigger('change');
+			}
+
+
+			else if (field.type == 'dropdown-native') {
 				var $inp = $("<select class='form-control instanceConfigField' data-type='"+field.type+"' data-id='"+field.id+"'>");
 
 				if (field.tooltip !== undefined) {
@@ -677,10 +762,36 @@ $(function() {
 
 				if (type == 'checkbox') {
 					$this.prop('checked', config[key]);
+
 				} else if (type == 'number') {
 					$this.val(config[key]);
 					// Make sure the value returned from the instance is valid
 					validateNumericField($this);
+
+				} else if (type === 'dropdown') {
+
+					// Get selected values and store them into an array
+					var selections = [];
+					if (typeof config[key] === 'string' || typeof config[key] === 'number') {
+						selections.push(config[key]);
+					}
+					else if (Array.isArray(config[key])) {
+						selections = config[key];
+					}
+
+					// Check if dropdown has all the selected options, if not create
+					for (var sel in selections) {
+						console.log('check for option', selections[sel], 'find', $this.find('option[value="' + selections[sel] + '"]'));
+						if ($this.find('option[value="' + selections[sel] + '"]').length < 1) {
+							var newOption = new Option(selections[sel], selections[sel], true, true);
+							$this.append(newOption).trigger('change');
+							console.log('not found, appending');
+						}
+					}
+
+					// Set stored selection (works with single values and arrays)
+					$this.val(config[key]);
+
 				} else {
 					$this.val(config[key]);
 				}
@@ -696,7 +807,7 @@ $(function() {
 		$brow.append($bcontainer);
 
 		$('#config_save').remove();
-		$('#instanceConfig').append($brow);
+		$('#instanceConfigButtons').append($brow);
 
 		$button.click(function () {
 			saveConfig(this, id);
@@ -719,7 +830,7 @@ $(function() {
 	});
 
 	$(".addInstance").click(function() {
-		socket.emit('instance_add', $(this).data('id'));
+		socket.emit('instance_add', { type: $(this).data('id'), product: $(this).data('product') });
 		$("#elgbuttons").click();
 	});
 

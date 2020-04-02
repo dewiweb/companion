@@ -3,11 +3,6 @@
 **Documentation**
 * https://github.com/bitfocus/companion/wiki/Installation
 
-**Build Status**
-* [![Travis Build Status](https://travis-ci.org/bitfocus/companion.svg?branch=master)](https://travis-ci.org/bitfocus/companion) Mac and Linux
-* [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/bitfocus/companion?branch=master&svg=true)](https://ci.appveyor.com/project/haakonnessjoen/companion/branch/master) Windows
-* [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fbitfocus%2Fcompanion.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fbitfocus%2Fcompanion?ref=badge_shield)
-
 **Our website**
 * https://bitfocus.io/companion/
 
@@ -17,9 +12,7 @@
 For checking known bugs or reporting of potential bugs, please use the [issue system](https://github.com/bitfocus/companion/issues) on GitHub
 
 **Donations**
-* [![Backers on Open Collective](https://opencollective.com/companion/backers/badge.svg)](#backers)
-* [![Sponsors on Open Collective](https://opencollective.com/companion/sponsors/badge.svg)](#sponsors)
-* https://opencollective.com/companion
+* https://donorbox.org/bitfocus-opensource
 
 ## Modules (Supported devices/software)
 * GrandMA2 (MA Lighting) v1.0.0 by William Viker
@@ -49,6 +42,7 @@ For checking known bugs or reporting of potential bugs, please use the [issue sy
 * LW3 (Lightware) v1.0.0 by Håkon Nessjøen
 * Listener (Octopus) v1.0.0 by Jeffrey Davidsz
 * LiveCore (Analog Way) v1.1.1 by Dorian Meid
+* LivePremier (Analog Way) v1.0.2 by Dorian Meid
 * MRP / Multicon (Nevion) v1.0.0 by William Viker
 * MagicQ (UDP) (ChamSys) v1.0.0 by Per Røine
 * MagicQ (ChamSys) v1.0.0 by Per Røine
@@ -87,7 +81,7 @@ For checking known bugs or reporting of potential bugs, please use the [issue sy
 * VLC (VideoLAN) v1.0.0 by Håkon Nessjøen
 * VP-747 (Kramer) v1.0.0 by Per Røine
 * Videohub (Blackmagic Design) v1.0.2 by William Viker
-* Watchout Production and Display Cluster (Dataton) v1.1.0 by Dorian Meid
+* Watchout Production and Display Cluster (Dataton) v1.2.0 by Dorian Meid
 * X32/M32 (Behringer/Midas) v1.0.0 by Per Roine
 * XR/MR (Behringer/Midas) v1.0.0 by Per Roine
 * iTach IP2CC (Global Cache) v1.0.0 by Casey Selph
@@ -139,14 +133,14 @@ This project exists thanks to all the people who contribute.
 
 ## Backers
 
-Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/companion#backer)]
+Thank you to all our backers! 🙏 [[Become a backer](https://donorbox.org/bitfocus-opensource)]
 
 <a href="https://opencollective.com/companion#backers" target="_blank"><img src="https://opencollective.com/companion/backers.svg?width=890"></a>
 
 
 ## Sponsors
 
-Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/companion#sponsor)]
+Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://donorbox.org/bitfocus-opensource)]
 
 <a href="https://opencollective.com/companion/sponsor/0/website" target="_blank"><img src="https://opencollective.com/companion/sponsor/0/avatar.svg"></a>
 <a href="https://opencollective.com/companion/sponsor/1/website" target="_blank"><img src="https://opencollective.com/companion/sponsor/1/avatar.svg"></a>
